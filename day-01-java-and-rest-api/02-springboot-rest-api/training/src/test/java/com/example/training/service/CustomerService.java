@@ -2,6 +2,8 @@ package com.example.training.service;
 
 import java.util.*;
 import org.springframework.stereotype.Service;
+
+import com.example.training.Exception.CustomerNotFoundException;
 import com.example.training.dto.CreateCustomerRequest;
 import com.example.training.dto.CustomerResponse;
 import com.example.training.model.Customer;
@@ -27,7 +29,10 @@ public class CustomerService {
 
     public CustomerResponse getCustomerById(Long id) {
         Customer customer = db.get(id);
-        if (customer == null) return null;
+        if (customer == null) {
+            throw new CustomerNotFoundException(
+                "Customer " + id + " not found.");
+        }
         return toResponse(customer);
     }
 
@@ -49,6 +54,23 @@ public class CustomerService {
     }
     
     public void deleteCustomer(Long id) {
-    db.remove(id);
+        if (!db.containsKey(id)) {
+            throw new CustomerNotFoundException(
+                "Customer " + id + " not found.");
+            }
+            db.remove(id);
+}
+
+    public CustomerResponse updateCustomer(Long id, CreateCustomerRequest request) {
+        Customer customer = db.get(id);
+        if (customer == null) {
+            throw new CustomerNotFoundException(
+                "Customer " + id + " not found.");
+        }
+        customer.setFullName(request.getFullName());
+        customer.setEmail(request.getEmail());
+        customer.setPhoneNumber(request.getPhoneNumber());
+        return toResponse(customer);
     }
+
 }
