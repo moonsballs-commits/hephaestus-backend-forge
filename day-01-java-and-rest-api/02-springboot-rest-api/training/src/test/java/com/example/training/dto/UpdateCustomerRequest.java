@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class CreateCustomerRequest {
+public class UpdateCustomerRequest {
 	@JsonProperty("full_name")
 	@NotBlank(message = "full_name is required")
 	@Size(min = 3)

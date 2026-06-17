@@ -1,11 +1,13 @@
 package com.example.training.service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import org.springframework.stereotype.Service;
-
 import com.example.training.Exception.CustomerNotFoundException;
 import com.example.training.dto.CreateCustomerRequest;
 import com.example.training.dto.CustomerResponse;
+import com.example.training.dto.PatchCustomerRequest;
+import com.example.training.dto.UpdateCustomerRequest;
 import com.example.training.model.Customer;
 
 @Service
@@ -19,7 +21,9 @@ public class CustomerService {
                 sequence,
                 request.getFullName(),
                 request.getEmail(),
-                request.getPhoneNumber()
+                request.getPhoneNumber(),
+                LocalDateTime.now(),
+                LocalDateTime.now()
         );
 
         db.put(sequence, customer);
@@ -44,24 +48,26 @@ public class CustomerService {
         return result;
     }
 
-    private CustomerResponse toResponse(Customer c) {
-        return new CustomerResponse(
-                c.getId(),
-                c.getFullName(),
-                c.getEmail(),
-                c.getPhoneNumber()
-        );
+    private CustomerResponse toResponse(Customer customer) {
+        return CustomerResponse.builder()
+            .id(customer.getId())
+            .fullName(customer.getFullName())
+            .email(customer.getEmail())
+            .phoneNumber(customer.getPhoneNumber())
+            .createdAt(customer.getCreatedAt())
+            .updatedAt(customer.getUpdatedAt())
+            .build();
     }
-    
+
     public void deleteCustomer(Long id) {
         if (!db.containsKey(id)) {
             throw new CustomerNotFoundException(
                 "Customer " + id + " not found.");
-            }
-            db.remove(id);
-}
+        }
+        db.remove(id);
+    }
 
-    public CustomerResponse updateCustomer(Long id, CreateCustomerRequest request) {
+    public CustomerResponse updateCustomer(Long id, UpdateCustomerRequest request) {
         Customer customer = db.get(id);
         if (customer == null) {
             throw new CustomerNotFoundException(
@@ -70,7 +76,26 @@ public class CustomerService {
         customer.setFullName(request.getFullName());
         customer.setEmail(request.getEmail());
         customer.setPhoneNumber(request.getPhoneNumber());
+        customer.setUpdatedAt(LocalDateTime.now());
         return toResponse(customer);
     }
 
+    public CustomerResponse patchCustomer(Long id, PatchCustomerRequest request) {
+        Customer customer = db.get(id);
+        if (customer == null) {
+            throw new CustomerNotFoundException(
+                "Customer " + id + " not found.");
+        }
+        if (request.getFullName() != null) {
+            customer.setFullName(request.getFullName());
+        }
+        if (request.getEmail() != null) {
+            customer.setEmail(request.getEmail());
+        }
+        if (request.getPhoneNumber() != null) {
+            customer.setPhoneNumber(request.getPhoneNumber());
+        }
+        customer.setUpdatedAt(LocalDateTime.now());
+        return toResponse(customer);
+    }
 }
