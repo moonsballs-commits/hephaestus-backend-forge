@@ -9,6 +9,9 @@ import com.example.training.dto.CustomerResponse;
 import com.example.training.dto.PatchCustomerRequest;
 import com.example.training.dto.UpdateCustomerRequest;
 import com.example.training.model.Customer;
+import com.example.training.model.User;
+import com.example.training.security.AuthContext;
+import com.example.training.security.RoleValidator;
 
 @Service
 public class CustomerService {
@@ -17,6 +20,9 @@ public class CustomerService {
     private Long sequence = 1L;
 
     public CustomerResponse createCustomer(CreateCustomerRequest request) {
+        User user = AuthContext.get();
+        RoleValidator.validate(user, "ADMIN", "STAFF");
+        
         Customer customer = new Customer(
                 sequence,
                 request.getFullName(),
