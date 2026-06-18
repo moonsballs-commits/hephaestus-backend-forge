@@ -25,8 +25,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @RestController
 @RequestMapping("/api/v1/customers")
 @Validated
-
-
 public class CustomerController {
     private final CustomerService customerService;
     

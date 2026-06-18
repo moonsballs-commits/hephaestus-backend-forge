@@ -1,4 +1,4 @@
-package com.example.training.Exception;
+package com.example.training.exception;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,6 +8,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import com.example.training.dto.ErrorResponse;
 import com.example.training.dto.WebResponse;
 
 @RestControllerAdvice
@@ -34,5 +35,25 @@ public class GlobalExceptionHandler {
     
     private String format(FieldError error) {
         return error.getField() + " " + error.getDefaultMessage();
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> unauthorized(UnauthorizedException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ErrorResponse.builder().code("UNAUTHORIZED").message(exception.getMessage()).errors(List.of()).build());
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponse> forbidden(ForbiddenException exception) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ErrorResponse.builder().code("FORBIDDEN").message(exception.getMessage()).errors(List.of()).build()
+            );
+    }
+
+    @ExceptionHandler(LoanApplicationNotFoundException.class)
+    public ResponseEntity<ErrorResponse> loanApplicationNotFound(LoanApplicationNotFoundException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponse.builder().code("LOAN_APPLICATION_NOT_FOUND").message(exception.getMessage()).errors(List.of()).build()
+            );
     }
 }

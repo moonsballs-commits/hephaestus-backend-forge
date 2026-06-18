@@ -3,7 +3,7 @@ package com.example.training.service;
 import java.time.LocalDateTime;
 import java.util.*;
 import org.springframework.stereotype.Service;
-import com.example.training.Exception.CustomerNotFoundException;
+import com.example.training.exception.CustomerNotFoundException;
 import com.example.training.dto.CreateCustomerRequest;
 import com.example.training.dto.CustomerResponse;
 import com.example.training.dto.PatchCustomerRequest;
