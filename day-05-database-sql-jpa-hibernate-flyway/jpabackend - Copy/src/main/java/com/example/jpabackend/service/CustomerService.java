@@ -1,7 +1,5 @@
 package com.example.jpabackend.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.util.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,16 +18,13 @@ import lombok.*;
 @RequiredArgsConstructor
 public class CustomerService {
     private final CustomerRepository customerRepository;
-    private static final Logger log = LoggerFactory.getLogger(CustomerService.class);
 
     private void validateDuplicateCustomer(CreateCustomerRequest request) {
         if (customerRepository.existsByNik(request.getNik())) {
-            log.warn("event=validation_error message=duplicate_nik");
             throw new DuplicateCustomerException(
                 "Nik " + request.getNik() + " already exists");
         }
         if (customerRepository.existsByEmail(request.getEmail())) {
-            log.warn("event=validation_error message=duplicate_email");
             throw new DuplicateCustomerException(
                 "Email " + request.getEmail() + " already exists");
         }
@@ -64,7 +59,6 @@ public class CustomerService {
             .phoneNumber(request.getPhoneNumber())
             .build();
         CustomerEntity savedCustomer = customerRepository.save(customer);
-        log.info("event=customer_created customer_id={}", savedCustomer.getId());
         return mapToResponse(savedCustomer);
     }
 

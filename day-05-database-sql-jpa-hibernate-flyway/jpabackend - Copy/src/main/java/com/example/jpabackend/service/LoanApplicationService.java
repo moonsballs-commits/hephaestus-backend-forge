@@ -3,12 +3,11 @@ package com.example.jpabackend.service;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.example.jpabackend.config.LoanInterestConfig;
 import com.example.jpabackend.dto.request.CreateLoanApplicationRequest;
 import com.example.jpabackend.dto.request.UpdateLoanStatusRequest;
@@ -34,7 +33,6 @@ public class LoanApplicationService {
     private final CustomerRepository customerRepository;
     private final RepaymentScheduleRepository repaymentScheduleRepository;
     private final LoanInterestConfig loanInterestConfig;
-    private static final Logger log = LoggerFactory.getLogger(LoanApplicationService.class);
     private LoanApplicationResponse mapToResponse(LoanApplicationEntity loan) {
         return LoanApplicationResponse.builder()
             .id(loan.getId())
@@ -112,7 +110,6 @@ public class LoanApplicationService {
             .status(LoanStatus.SUBMITTED)
             .build();
         LoanApplicationEntity savedLoan = loanApplicationRepository.save(loan);
-        log.info("event=loan_application_submitted application_id={} customer_id={}", savedLoan.getId(), customer.getId());
         return mapToResponse(savedLoan);
     }
 
@@ -228,12 +225,6 @@ public class LoanApplicationService {
         }
         loan.setStatus(next);
     LoanApplicationEntity updated = loanApplicationRepository.save(loan);
-        if (next == LoanStatus.APPROVED) {
-            log.info("event=loan_application_approved application_id={}", updated.getId());
-        }
-        if (next == LoanStatus.REJECTED) {
-            log.info("event=loan_application_rejected application_id={}", updated.getId());
-        }
         if (next == LoanStatus.DISBURSED) {
             generateRepaymentSchedule(updated);
         }
